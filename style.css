@@ -1,0 +1,254 @@
+:root {
+    --flcs-primary: #35afb6;
+    --flcs-secondary: #2c9aa0;
+    --flcs-bg-light: #f9f9f9;
+    --flcs-white: #ffffff;
+    --flcs-text: #333333;
+    --flcs-font: 'Poppins', sans-serif;
+}
+
+/* --- Launcher Button --- */
+#flcs-widget-container {
+    position: relative;
+    z-index: 2147483647;
+}
+
+.flcs-launcher {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: grid;
+    place-items: center;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
+}
+
+.flcs-launcher:hover {
+    transform: scale(1.1);
+}
+
+/* --- Logo Stacking & Animation --- */
+.flcs-logo-default, .flcs-logo-special {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+}
+
+.flcs-logo-special {
+    font-size: 32px;
+    opacity: 0;
+    transform: rotateY(180deg);
+    background: white;
+    border-radius: 50%;
+    border: 2px solid var(--flcs-primary);
+    width: 60px;
+    height: 60px;
+}
+
+.flcs-animating .flcs-logo-default { animation: flipHide 8s infinite ease-in-out; }
+.flcs-animating .flcs-logo-special { animation: flipShow 8s infinite ease-in-out; }
+
+@keyframes flipHide {
+    0%, 45% { opacity: 1; transform: rotateY(0deg); }
+    50%, 95% { opacity: 0; transform: rotateY(180deg); }
+    100% { opacity: 1; transform: rotateY(360deg); }
+}
+@keyframes flipShow {
+    0%, 45% { opacity: 0; transform: rotateY(-180deg); }
+    50%, 95% { opacity: 1; transform: rotateY(0deg); }
+    100% { opacity: 0; transform: rotateY(180deg); }
+}
+
+/* --- Chat Window --- */
+.flcs-window {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    width: 380px;
+    max-width: 90vw;
+    height: 600px;
+    max-height: 75vh;
+    background: var(--flcs-white);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--flcs-font);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom right;
+    z-index: 2147483647;
+}
+
+.flcs-window.hidden {
+    opacity: 0;
+    transform: scale(0) translateY(100px);
+    pointer-events: none;
+    display: none !important;
+}
+
+/* --- Window States --- */
+.flcs-window.expanded {
+    width: 90vw;
+    height: 85vh;
+    bottom: 20px;
+    right: 20px;
+}
+
+/* --- Header --- */
+.flcs-header {
+    background: linear-gradient(135deg, var(--flcs-primary), var(--flcs-secondary));
+    color: white;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+}
+
+.flcs-controls button {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    margin-left: 5px;
+    transition: background 0.2s;
+}
+
+.flcs-controls button:hover { background: rgba(255,255,255,0.4); }
+
+/* --- Messages Area --- */
+.flcs-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--flcs-bg-light);
+    scroll-behavior: smooth;
+}
+
+/* --- Chat Bubbles --- */
+.flcs-msg {
+    max-width: 85%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    position: relative;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+.flcs-msg.bot {
+    align-self: flex-start;
+    background: white;
+    color: var(--flcs-text);
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.flcs-msg.user {
+    align-self: flex-end;
+    background: var(--flcs-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+/* --- Typing Indicator --- */
+.flcs-typing { padding: 10px 20px; display: flex; gap: 4px; }
+.flcs-dot { width: 8px; height: 8px; background: #ccd1d1; border-radius: 50%; animation: blink 1.4s infinite; }
+.flcs-dot:nth-child(2) { animation-delay: 0.2s; }
+.flcs-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* --- Action Buttons --- */
+.flcs-buttons {
+    padding: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+.flcs-btn {
+    background: #f0fbfc;
+    border: 1.5px solid var(--flcs-primary);
+    color: var(--flcs-primary);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.flcs-btn:hover { background: var(--flcs-primary); color: white; }
+
+/* --- Input Area --- */
+.flcs-input-area {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    background: white;
+    border-top: 1px solid #eee;
+}
+
+.flcs-input {
+    flex: 1;
+    padding: 12px 18px;
+    border: 1px solid #e0e0e0;
+    border-radius: 25px;
+    outline: none;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.flcs-input:focus { border-color: var(--flcs-primary); }
+
+.flcs-send {
+    background: var(--flcs-primary);
+    color: white;
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    margin-left: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.flcs-send:hover { background: var(--flcs-secondary); }
+
+/* --- Mobile Fixes --- */
+@media (max-width: 480px) {
+    .flcs-window {
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        right: 0;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+    }
+    .flcs-launcher { bottom: 15px; right: 15px; }
+}

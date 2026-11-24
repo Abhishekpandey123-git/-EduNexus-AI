@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduNexus AI — Admission & Study Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #35afb6;
+            --secondary: #2c9aa0;
+            --bg-light: #f4f7f6;
+            --white: #ffffff;
+            --text: #333;
+            --bot-bubble: #ffffff;
+            --user-bubble: #35afb6;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-light);
+            margin: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-window {
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .header-top strong {
+            font-size: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .mode-container {
+            display: flex;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 25px;
+            padding: 4px;
+            min-width: 280px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            border: none;
+            background: none;
+            color: rgba(255, 255, 255, 0.85);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .mode-btn.active {
+            background: var(--white);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #msg-container {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background: var(--bg-light);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .msg {
+            padding: 14px 18px;
+            border-radius: 18px;
+            font-size: 15px;
+            max-width: min(820px, 88%);
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+
+        .msg.user {
+            align-self: flex-end;
+            background: var(--user-bubble);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg.bot {
+            align-self: flex-start;
+            background: var(--bot-bubble);
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .msg table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .msg th, .msg td {
+            border: 1px solid #e2e8f0;
+            padding: 6px 10px;
+            text-align: left;
+        }
+
+        .msg th {
+            background: #f1f5f9;
+            font-weight: 600;
+        }
+
+        #quick-btns {
+            padding: 12px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: var(--white);
+            border-top: 1px solid #eee;
+        }
+
+        #quick-btns:empty {
+            display: none;
+        }
+
+        .q-btn {
+            border: 1.5px solid var(--primary);
+            background: none;
+            color: var(--primary);
+            padding: 7px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-family: inherit;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        .q-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .input-area {
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            background: var(--white);
+            border-top: 1px solid #eee;
+            gap: 12px;
+        }
+
+        .upload-icon {
+            font-size: 22px;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+        }
+
+        .upload-icon:hover {
+            color: var(--primary);
+        }
+
+        input[type="text"] {
+            flex: 1;
+            border: 1px solid #e0e0e0;
+            padding: 13px 20px;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        #send-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        #send-btn:hover {
+            background: var(--secondary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <div class="header-top">
+            <strong>🎓 EduNexus AI</strong>
+        </div>
+        <div class="mode-container">
+            <button class="mode-btn active" id="mode-josaa" onclick="switchMode('josaa')">Admission 🏛️</button>
+            <button class="mode-btn" id="mode-study" onclick="switchMode('study')">Study Mode 📚</button>
+        </div>
+    </div>
+
+    <div id="msg-container"></div>
+
+    <div id="quick-btns"></div>
+
+    <form class="input-area" id="chat-form">
+        <label for="note-upload" class="upload-icon" title="Upload Notes">📎</label>
+        <input type="file" id="note-upload" class="hidden" accept=".pdf,.txt" onchange="uploadFile()">
+
+        <input type="text" id="user-input" placeholder="Ask a question..." autocomplete="off">
+        <button type="submit" id="send-btn">➤</button>
+    </form>
+</div>
+
+<script>
+    const BASE_URL = window.location.protocol.startsWith("http") && window.location.port === "5000"
+        ? ""
+        : "http://127.0.0.1:5000";
+    const API_KEY = "e292c93fcbd938004b0cf7f4bceaec9fc494defc8b4ef567";
+
+    let currentMode = "josaa";
+    const USER_ID = "student_demo_123";
+
+    const msgContainer = document.getElementById('msg-container');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const quickBtns = document.getElementById('quick-btns');
+
+    window.addEventListener('DOMContentLoaded', () => {
+        addMessage("Welcome! I am **EduNexus**, your dual-mode AI.\n\nChoose **Admission Mode** for JoSAA 2025 ranks or **Study Mode** to learn from your own notes.", "bot");
+        renderButtons(["Main Menu", "Check Eligibility 🎓"]);
+    });
+
+    function switchMode(mode) {
+        currentMode = mode;
+        document.getElementById('mode-josaa').classList.toggle('active', mode === 'josaa');
+        document.getElementById('mode-study').classList.toggle('active', mode === 'study');
+
+        const text = mode === 'josaa'
+            ? "🏛️ **Admission Mode Active.** Searching JoSAA 2025 Rank data."
+            : "📚 **Study Mode Active.** I'm ready to learn from your notes. Upload a file or paste text below.";
+        addMessage(text, "bot");
+    }
+
+    function formatMarkdown(text) {
+        let html = text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+
+        const lines = html.split('\n');
+        let out = [];
+        let inTable = false;
+        let isHeader = true;
+
+        for (let line of lines) {
+            const trimmed = line.trim();
+            if (trimmed.startsWith('|') && trimmed.endsWith('|')) {
+                const cells = trimmed.slice(1, -1).split('|').map(c => c.trim());
+                if (cells.every(c => /^[-:]+$/.test(c))) {
+                    isHeader = false;
+                    continue;
+                }
+                if (!inTable) {
+                    out.push('<table>');
+                    inTable = true;
+                    isHeader = true;
+                }
+                const tag = isHeader ? 'th' : 'td';
+                out.push('<tr>' + cells.map(c => `<${tag}>${c}</${tag}>`).join('') + '</tr>');
+                isHeader = false;
+            } else {
+                if (inTable) {
+                    out.push('</table>');
+                    inTable = false;
+                }
+                out.push(line);
+            }
+        }
+        if (inTable) out.push('</table>');
+        return out.join('<br>').replace(/<br><table>/g, '<table>').replace(/<\/table><br>/g, '</table>');
+    }
+
+    function addMessage(text, sender) {
+        const div = document.createElement('div');
+        div.className = `msg ${sender}`;
+        div.innerHTML = formatMarkdown(text);
+        msgContainer.appendChild(div);
+        msgContainer.scrollTop = msgContainer.scrollHeight;
+    }
+
+    function renderButtons(labels) {
+        quickBtns.innerHTML = "";
+        labels.forEach(label => {
+            const btn = document.createElement('button');
+            btn.className = "q-btn";
+            btn.innerText = label;
+            btn.onclick = () => sendRequest(label);
+            quickBtns.appendChild(btn);
+        });
+    }
+
+    async function uploadFile() {
+        const fileInput = document.getElementById('note-upload');
+        const file = fileInput.files[0];
+        if (!file) return;
+
+        addMessage(`System: Processing **${file.name}**...`, "bot");
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('user_id', USER_ID);
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/upload_notes`, {
+                method: "POST",
+                credentials: "include",
+                body: formData
+            });
+            const data = await response.json();
+            addMessage(data.message, "bot");
+            fileInput.value = "";
+        } catch (err) {
+            addMessage("⚠️ Failed to upload file. Check if backend is running.", "bot");
+        }
+    }
+
+    async function sendRequest(text) {
+        addMessage(text, "user");
+        userInput.value = "";
+        renderButtons([]);
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/chat`, {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    query: text,
+                    mode: currentMode,
+                    user_id: USER_ID
+                })
+            });
+            const data = await response.json();
+            addMessage(data.markdown, "bot");
+            if (data.buttons) renderButtons(data.buttons);
+        } catch (err) {
+            addMessage("⚠️ Connection error with AI server.", "bot");
+        }
+    }
+
+    chatForm.onsubmit = (e) => {
+        e.preventDefault();
+        const val = userInput.value.trim();
+        if (val) sendRequest(val);
+    };
+</script>
+
+</body>
+</html>
